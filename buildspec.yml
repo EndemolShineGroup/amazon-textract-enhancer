@@ -1,0 +1,8 @@
+phases:
+  build:
+    commands:
+      - cd templates && zip -r textract-code.zip *
+
+artifacts:
+  files:
+    - '**/*'
