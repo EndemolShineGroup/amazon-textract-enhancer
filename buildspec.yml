@@ -5,7 +5,7 @@ phases:
     commands:
       - cd functions && zip -r textract-lambda-code.zip *
       - aws s3 cp textract-lambda-code.zip s3://esg-textract-code/textract-lambda-code.zip
-
+      - aws cloudformation deploy templates/textract-api-stack.json --stack-name Textract-Enhancer-Stack
 artifacts:
   files:
     - '**/*'
