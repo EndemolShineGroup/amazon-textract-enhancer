@@ -3,7 +3,8 @@ version: 0.2
 phases:
   build:
     commands:
-      - cd templates && zip -r textract-code.zip *
+      - cd functions && zip -r textract-lambda-code.zip *
+      - aws s3 cp functions/textract-lambda-code.zip s3://esg-textract-code/textract-lambda-code.zip
 
 artifacts:
   files:

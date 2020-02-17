@@ -10,52 +10,52 @@
         },
         "NewDocumentBucketNeeded" : {
             "Type" : "String",
-            "Description" : "Create new S3 bucket for document input?",            
+            "Description" : "Create new S3 bucket for document input?",
             "AllowedValues" : [ "true", "false" ],
             "Default" : "true"
-        },            
+        },
         "TextractRoleName" :{
             "Type": "String",
             "Description": " The role that Textract will use assume permissions to publish to SNS topic and to access S3 bucket.",
             "Default": "ServiceTextractRole",
             "ConstraintDescription" : "Should be a Valid IAM Role Name"
-        }, 
+        },
         "LambdaRoleName" :{
             "Type": "String",
             "Description": " The role that Lambda functions will assume in order be able to Textract API and access S3 buckets",
             "Default": "LambdaTextractRole",
             "ConstraintDescription" : "Should be a Valid IAM Role Name"
-        },              
+        },
         "DocumentAnalysisJobStatusTopicName" :{
             "Type": "String",
             "Default": "DocumentAnalysisJobStatusTopic",
-            "Description": "SNS Topic where Textract will publish JobIds upon completion of document analysis jobs"            
-        }, 
+            "Description": "SNS Topic where Textract will publish JobIds upon completion of document analysis jobs"
+        },
         "TextDetectionJobStatusTopicName" :{
             "Type": "String",
             "Default": "TextDetectionJobStatusTopic",
-            "Description": "SNS Topic where Textract will publish JobIds upon completion of text detection jobs"            
-        },              
+            "Description": "SNS Topic where Textract will publish JobIds upon completion of text detection jobs"
+        },
         "DynamoDBTableName" :{
             "Type": "String",
             "Description": "DynamoDB Table name where job status and results will be stored",
             "AllowedPattern": "^[a-zA-Z0-9._-]{3,255}$",
             "Default": "TextractTrackingTable",
             "ConstraintDescription" : "Should be a Valid DynamoDB Table Name"
-        },        
+        },
         "LambdaCodeBucketName" :{
             "Type": "String",
             "AllowedPattern": "^([a-z]|(\\d(?!\\d{0,2}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})))([a-z\\d]|(\\.(?!(\\.|-)))|(-(?!\\.))){1,61}[a-z\\d\\.]$",
-            "Default": "my-python-packages",
+            "Default": "esg-textract-code",
             "ConstraintDescription" : "Should be a Valid S3 Bucket Name",
-            "Description": "S3 Bucket hosting lambda code package (DO NOT CHANGE)"            
-        },  
+            "Description": "S3 Bucket hosting lambda code package (DO NOT CHANGE)"
+        },
         "LambdaCodeFile" :{
             "Type": "String",
             "Default": "textract-lambda-code.zip",
-            "Description": "Zip file containing the lambda code (DO NOT CHANGE)"            
-        }             
-    },  
+            "Description": "Zip file containing the lambda code (DO NOT CHANGE)"
+        }
+    },
     "Conditions": {
         "DocumentBucketNameNotEmptyCondition" : { "Fn::Not" : [ { "Fn::Equals" : ["", {"Ref": "DocumentBucketName"}] } ] },
         "NewDocumentBucketNeededCondition" : { "Fn::Equals" : ["true", {"Ref": "NewDocumentBucketNeeded"}] },
@@ -63,7 +63,7 @@
         "DocumentAnalysisJobStatusTopicNameNotEmptyCondition" : { "Fn::Not" : [ { "Fn::Equals" : ["", {"Ref": "DocumentAnalysisJobStatusTopicName"}] } ] },
         "TextDetectionJobStatusTopicNameNotEmptyCondition" : { "Fn::Not" : [ { "Fn::Equals" : ["", {"Ref": "TextDetectionJobStatusTopicName"}] } ] }
     },
-    "Resources": {     
+    "Resources": {
         "TextractDocumentAnalysisTable": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
@@ -72,11 +72,11 @@
                     {
                         "AttributeName": "JobId",
                         "AttributeType": "S"
-                    },       
+                    },
                     {
                         "AttributeName": "JobType",
                         "AttributeType": "S"
-                    },                                
+                    },
                     {
                         "AttributeName": "DocumentBucket",
                         "AttributeType": "S"
@@ -84,7 +84,7 @@
                     {
                         "AttributeName": "DocumentPath",
                         "AttributeType": "S"
-                    }                    
+                    }
                 ],
                 "KeySchema": [
                     {
@@ -94,7 +94,7 @@
                     {
                         "AttributeName": "JobType",
                         "KeyType": "RANGE"
-                    }                    
+                    }
                 ],
                 "GlobalSecondaryIndexes": [
                     {
@@ -117,7 +117,7 @@
                               "WriteCapacityUnits": 5
                         }
                     }
-                ],                
+                ],
                 "ProvisionedThroughput": {
                     "ReadCapacityUnits": 5,
                     "WriteCapacityUnits": 5
@@ -247,7 +247,7 @@
                     }
                 }
             }
-        },                             
+        },
         "LambdaTextractRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -265,7 +265,7 @@
                             "Action": [
                                 "sts:AssumeRole"
                             ]
-                        }                       
+                        }
                     ]
                 },
                 "Path": "/",
@@ -290,7 +290,7 @@
                                         "xray:PutTraceSegments"
                                     ],
                                     "Resource": "*"
-                                }                                
+                                }
                             ]
                         }
                     },
@@ -303,7 +303,7 @@
                                     "Effect": "Allow",
                                     "Action": "iam:*",
                                     "Resource": "*"
-                                }                             
+                                }
                             ]
                         }
                     },
@@ -316,7 +316,7 @@
                                     "Effect": "Allow",
                                     "Action": "dynamodb:*",
                                     "Resource": "*"
-                                }                             
+                                }
                             ]
                         }
                     },
@@ -329,13 +329,13 @@
                                     "Effect": "Allow",
                                     "Action": "textract:*",
                                     "Resource": "*"
-                                }                             
+                                }
                             ]
                         }
-                    }                                                              
+                    }
                 ]
             }
-        },   
+        },
         "TextractPostProcessTableFunction": {
             "Type": "AWS::Lambda::Function",
             "DependsOn" : "LambdaTextractRole",
@@ -344,15 +344,15 @@
                 "Handler": "document-analysis-postprocess-table.lambda_handler",
                 "Role": { "Fn::GetAtt" : ["LambdaTextractRole", "Arn"] },
                 "Environment": {
-                    "Variables" : 
-                        { 
+                    "Variables" :
+                        {
                             "AWS_DATA_PATH": "models",
-                            "max_retry_attempt": "3",   
+                            "max_retry_attempt": "3",
                             "retry_interval": "10",
                             "max_results": "1000",
                             "table_name": {"Ref" : "TextractDocumentAnalysisTable"}
                         }
-                },                 
+                },
                 "Code": {
                     "S3Bucket": { "Ref" : "LambdaCodeBucketName" },
                     "S3Key": { "Ref" : "LambdaCodeFile" }
@@ -364,7 +364,7 @@
                     "Mode": "Active"
                 }
             }
-        },   
+        },
         "TextractPostProcessFormFunction": {
             "Type": "AWS::Lambda::Function",
             "DependsOn" : "LambdaTextractRole",
@@ -373,15 +373,15 @@
                 "Handler": "document-analysis-postprocess-form.lambda_handler",
                 "Role": { "Fn::GetAtt" : ["LambdaTextractRole", "Arn"] },
                 "Environment": {
-                    "Variables" : 
-                        { 
+                    "Variables" :
+                        {
                             "AWS_DATA_PATH": "models",
-                            "max_retry_attempt": "3",   
+                            "max_retry_attempt": "3",
                             "retry_interval": "10",
                             "max_results": "1000",
                             "table_name": {"Ref" : "TextractDocumentAnalysisTable"}
                         }
-                },                 
+                },
                 "Code": {
                     "S3Bucket": { "Ref" : "LambdaCodeBucketName" },
                     "S3Key": { "Ref" : "LambdaCodeFile" }
@@ -393,7 +393,7 @@
                     "Mode": "Active"
                 }
             }
-        },  
+        },
         "TextractPostProcessTextFunction": {
             "Type": "AWS::Lambda::Function",
             "DependsOn" : "LambdaTextractRole",
@@ -402,15 +402,15 @@
                 "Handler": "detect-text-postprocess-page.lambda_handler",
                 "Role": { "Fn::GetAtt" : ["LambdaTextractRole", "Arn"] },
                 "Environment": {
-                    "Variables" : 
-                        { 
+                    "Variables" :
+                        {
                             "AWS_DATA_PATH": "models",
-                            "max_retry_attempt": "3",   
+                            "max_retry_attempt": "3",
                             "retry_interval": "10",
                             "max_results": "1000",
                             "table_name": {"Ref" : "TextractDocumentAnalysisTable"}
                         }
-                },                 
+                },
                 "Code": {
                     "S3Bucket": { "Ref" : "LambdaCodeBucketName" },
                     "S3Key": { "Ref" : "LambdaCodeFile" }
@@ -422,7 +422,7 @@
                     "Mode": "Active"
                 }
             }
-        },          
+        },
         "TextractDocumentAnalysisResultRetrievalFunction": {
             "Type": "AWS::Lambda::Function",
             "DependsOn" : "LambdaTextractRole",
@@ -431,12 +431,12 @@
                 "Handler": "document-analysis-result-retrieval.lambda_handler",
                 "Role": { "Fn::GetAtt" : ["LambdaTextractRole", "Arn"] },
                 "Environment": {
-                    "Variables" : 
-                        { 
+                    "Variables" :
+                        {
                             "AWS_DATA_PATH": "models",
                             "table_name": {"Ref" : "TextractDocumentAnalysisTable"}
                         }
-                },                 
+                },
                 "Code": {
                     "S3Bucket": { "Ref" : "LambdaCodeBucketName" },
                     "S3Key": { "Ref" : "LambdaCodeFile" }
@@ -448,7 +448,7 @@
                     "Mode": "Active"
                 }
             }
-        },     
+        },
         "TextractTextDetectionResultRetrievalFunction": {
             "Type": "AWS::Lambda::Function",
             "DependsOn" : "LambdaTextractRole",
@@ -457,12 +457,12 @@
                 "Handler": "detect-text-result-retrieval.lambda_handler",
                 "Role": { "Fn::GetAtt" : ["LambdaTextractRole", "Arn"] },
                 "Environment": {
-                    "Variables" : 
-                        { 
+                    "Variables" :
+                        {
                             "AWS_DATA_PATH": "models",
                             "table_name": {"Ref" : "TextractDocumentAnalysisTable"}
                         }
-                },                 
+                },
                 "Code": {
                     "S3Bucket": { "Ref" : "LambdaCodeBucketName" },
                     "S3Key": { "Ref" : "LambdaCodeFile" }
@@ -474,7 +474,7 @@
                     "Mode": "Active"
                 }
             }
-        },                                                   
+        },
         "DocumentAnalysisJobStatusTopic" : {
             "Type" : "AWS::SNS::Topic",
             "DependsOn": ["TextractPostProcessTableFunction", "TextractPostProcessFormFunction"],
@@ -489,10 +489,10 @@
                     {
                         "Endpoint" : {"Fn::GetAtt" : ["TextractPostProcessFormFunction", "Arn"] },
                         "Protocol": "lambda"
-                    }                                   
-                ]                  
-            }          
-        },    
+                    }
+                ]
+            }
+        },
         "PostProcessTableInvokeSNSPermission": {
             "Type": "AWS::Lambda::Permission",
             "DependsOn": "DocumentAnalysisJobStatusTopic",
@@ -502,7 +502,7 @@
                 "Principal": "sns.amazonaws.com",
                 "SourceArn": {"Ref": "DocumentAnalysisJobStatusTopic"}
             }
-        },      
+        },
         "PostProcessFormInvokeSNSPermission": {
             "Type": "AWS::Lambda::Permission",
             "DependsOn": "DocumentAnalysisJobStatusTopic",
@@ -512,7 +512,7 @@
                 "Principal": "sns.amazonaws.com",
                 "SourceArn": {"Ref": "DocumentAnalysisJobStatusTopic"}
             }
-        },               
+        },
         "TextDetectionJobStatusTopic" : {
             "Type" : "AWS::SNS::Topic",
             "DependsOn": ["TextractPostProcessTextFunction"],
@@ -523,10 +523,10 @@
                     {
                         "Endpoint" : {"Fn::GetAtt" : ["TextractPostProcessTextFunction", "Arn"] },
                         "Protocol": "lambda"
-                    }                                       
-                ]                  
-            }          
-        },  
+                    }
+                ]
+            }
+        },
         "PostProcessTextInvokeSNSPermission": {
             "Type": "AWS::Lambda::Permission",
             "DependsOn": "TextDetectionJobStatusTopic",
@@ -536,20 +536,20 @@
                 "Principal": "sns.amazonaws.com",
                 "SourceArn": {"Ref": "TextDetectionJobStatusTopic"}
             }
-        },           
+        },
         "TextractAsyncJobSubmitFunction": {
             "Type": "AWS::Lambda::Function",
             "DependsOn" : ["DocumentAnalysisJobStatusTopic", "TextDetectionJobStatusTopic"],
             "Properties": {
                 "Description" : "Python Lambda function that scans an input S3 bucket for scanned document, and invokes Textract to extract tables and forms.",
                 "Handler": "textract-job-submit-async.lambda_handler",
-                "Role": { "Fn::GetAtt" : ["LambdaTextractRole", "Arn"] },               
+                "Role": { "Fn::GetAtt" : ["LambdaTextractRole", "Arn"] },
                 "Environment": {
-                    "Variables" : 
-                        { 
+                    "Variables" :
+                        {
                             "AWS_DATA_PATH": "models",
-                            "max_retry_attempt": "3",   
-                            "retry_interval": "30",                             
+                            "max_retry_attempt": "3",
+                            "retry_interval": "30",
                             "document_analysis_token_prefix": "TextractDocumentAnalysisJob",
                             "text_detection_token_prefix": "TextractTextDetectionJob",
                             "document_analysis_topic_arn": {"Ref": "DocumentAnalysisJobStatusTopic"},
@@ -558,7 +558,7 @@
                             "role_name":  { "Ref": "LambdaTextractRole" },
                             "table_name": {"Ref" : "TextractDocumentAnalysisTable"}
                         }
-                },                 
+                },
                 "Code": {
                     "S3Bucket": { "Ref" : "LambdaCodeBucketName" },
                     "S3Key": { "Ref" : "LambdaCodeFile" }
@@ -570,7 +570,7 @@
                     "Mode": "Active"
                 }
             }
-        },    
+        },
         "DocumentAnalysisLambdaInvokeS3Permission": {
             "Type": "AWS::Lambda::Permission",
             "DependsOn": "TextractAsyncJobSubmitFunction",
@@ -580,12 +580,12 @@
                 "Principal": "s3.amazonaws.com",
                 "SourceArn": {"Fn::Join": [":",["arn","aws","s3","","", {"Fn::Join": ["-", [{"Ref": "AWS::AccountId"}, {"Ref": "DocumentBucketName"}]]}]]}
             }
-        },                                      
+        },
         "TextractServiceRole": {
             "Type" : "AWS::IAM::Role",
-            "DependsOn": ["DocumentAnalysisJobStatusTopic", "TextDetectionJobStatusTopic"],            
-            "Properties" : {  
-                "RoleName": {"Fn::Join": ["-", [{"Ref": "AWS::Region"}, {"Ref": "TextractRoleName"}]]},            
+            "DependsOn": ["DocumentAnalysisJobStatusTopic", "TextDetectionJobStatusTopic"],
+            "Properties" : {
+                "RoleName": {"Fn::Join": ["-", [{"Ref": "AWS::Region"}, {"Ref": "TextractRoleName"}]]},
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -599,7 +599,7 @@
                             "Action": [
                                 "sts:AssumeRole"
                             ]
-                        }                       
+                        }
                     ]
                 },
                 "Path": "/",
@@ -622,19 +622,19 @@
                                         "sns:Publish"
                                     ],
                                     "Resource": {"Ref" : "TextDetectionJobStatusTopic"}
-                                }                                                                
+                                }
                             ]
                         }
-                    }                    
-                ]                                
+                    }
+                ]
             }
-        },                            
+        },
         "DocumentBucket": {
             "Type": "AWS::S3::Bucket",
             "DependsOn": ["TextractAsyncJobSubmitFunction", "DocumentAnalysisLambdaInvokeS3Permission"],
-            "Condition": "NewDocumentBucketCreation",          
+            "Condition": "NewDocumentBucketCreation",
             "Properties": {
-                "BucketName" : {"Fn::Join": ["-", [{"Ref": "AWS::AccountId"}, {"Ref": "DocumentBucketName"}]]},                
+                "BucketName" : {"Fn::Join": ["-", [{"Ref": "AWS::AccountId"}, {"Ref": "DocumentBucketName"}]]},
                 "AccessControl": "Private",
                 "VersioningConfiguration": {
                     "Status": "Enabled"
@@ -657,9 +657,9 @@
                             "Function" : {"Fn::GetAtt": ["TextractAsyncJobSubmitFunction", "Arn"]},
                             "Filter" : { "S3Key" : { "Rules" : [ { "Name" : "suffix", "Value" : "jpeg" } ] } }
 
-                        }                                               
+                        }
                     ]
-                }                
+                }
             },
             "DeletionPolicy" : "Retain"
         },
@@ -695,8 +695,8 @@
                                 "s3:ListBucketVersions"
                             ],
                             "Resource": {"Fn::GetAtt": ["DocumentBucket", "Arn"]}
-                        }                        
-                    ]                   
+                        }
+                    ]
                }
             },
             "DeletionPolicy" : "Retain"
@@ -820,7 +820,7 @@
                                     "type":"mock"
                                 }
                             }
-                        },                   
+                        },
                         "/retrievedocumentanalysisresult":{
                             "get":{
                                 "consumes":[
@@ -1028,7 +1028,7 @@
                                     "type":"mock"
                                 }
                             }
-                        }                                                        
+                        }
                     },
                     "definitions":{
                         "Empty":{
@@ -1050,7 +1050,7 @@
         ["arn:aws:execute-api:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":", {"Ref": "TextractDemoAPI"}, "/*"]
                 ]}
             }
-        },     
+        },
         "DocumentAnalysisResultRetrievalLambdaInvokeAPIPermission": {
             "Type": "AWS::Lambda::Permission",
             "DependsOn": "TextractDemoAPI",
@@ -1060,7 +1060,7 @@
                 "Principal": "apigateway.amazonaws.com",
                 "SourceArn": {"Fn::Join": ["",["arn:aws:execute-api:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":", {"Ref": "TextractDemoAPI"}, "/*"]]}
             }
-        },  
+        },
         "TextDetectionResultRetrievalLambdaInvokeAPIPermission": {
             "Type": "AWS::Lambda::Permission",
             "DependsOn": "TextractDemoAPI",
@@ -1070,7 +1070,7 @@
                 "Principal": "apigateway.amazonaws.com",
                 "SourceArn": {"Fn::Join": ["",["arn:aws:execute-api:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":", {"Ref": "TextractDemoAPI"}, "/*"]]}
             }
-        },                
+        },
         "TextractDemoAPIDeployment": {
             "Type": "AWS::ApiGateway::Deployment",
             "DependsOn": "TextractDemoAPI",
@@ -1082,20 +1082,20 @@
         "MetricsEnabled": "true"
                 }
             }
-        }                                          
+        }
     },
-    "Outputs" : {       
+    "Outputs" : {
         "DocumentBucket" : {
             "Description" : "Upload documents on this bucket to analyze using Textract",
             "Value" : {
                 "Fn::Join": ["&",[
-                    { "Fn::Join": ["?",[                    
+                    { "Fn::Join": ["?",[
                         {"Fn::Join": ["/",["https:", "", "s3.console.aws.amazon.com", "s3", "buckets", {"Ref" : "DocumentBucket"}]]},
                         {"Fn::Join": ["=",["region", {"Ref": "AWS::Region"}]]}
                     ]]
                     },"tab=items"]]
             }
-        },           
+        },
         "TextractTrackingTable" : {
             "Description" : "Tracking Textract job status and result metadata in this table",
             "Value" : {
@@ -1112,7 +1112,7 @@
                         }, {"Ref": "TextractDocumentAnalysisTable"}]]
                     },"tab=items"]]
             }
-        },                                     
+        },
         "TextractEnhancerAPIInvokeURL": {
             "Description" : "API to submit jobs and retrieve Textract results",
             "Value": {
@@ -1121,9 +1121,9 @@
         },
         "TextractAsyncJobSubmitFunction": {
             "Description" : "Function to submit Textract jobs",
-            "Value": {     
+            "Value": {
                 "Fn::Join": ["/",[
-                { 
+                {
                     "Fn::Join": ["#",[
                     { "Fn::Join": ["?",[
                         {"Fn::Join": ["/",["https:", "", "console.aws.amazon.com", "lambda", "home"]]},
@@ -1131,13 +1131,13 @@
                     ]]
                     }, "/functions"]]
                 },{"Ref": "TextractAsyncJobSubmitFunction"}]]
-            } 
-        },          
+            }
+        },
         "TextractPostProcessTableFunction": {
             "Description" : "Function to extract tables from Textract response",
-            "Value": {     
+            "Value": {
                 "Fn::Join": ["/",[
-                { 
+                {
                     "Fn::Join": ["#",[
                     { "Fn::Join": ["?",[
                         {"Fn::Join": ["/",["https:", "", "console.aws.amazon.com", "lambda", "home"]]},
@@ -1145,63 +1145,63 @@
                     ]]
                     }, "/functions"]]
                 },{"Ref": "TextractPostProcessTableFunction"}]]
-            }                
-        },  
+            }
+        },
         "TextractPostProcessFormFunction": {
             "Description" : "Function to extract form fields from Textract response",
-            "Value": {     
+            "Value": {
                 "Fn::Join": ["/",[
-                { 
+                {
                     "Fn::Join": ["#",[
                     { "Fn::Join": ["?",[
                         {"Fn::Join": ["/",["https:", "", "console.aws.amazon.com", "lambda", "home"]]},
                         {"Fn::Join": ["=",["region", {"Ref": "AWS::Region"}]]}
                     ]]
                     }, "/functions"]]
-                },{"Ref": "TextractPostProcessFormFunction"}]]            
+                },{"Ref": "TextractPostProcessFormFunction"}]]
             }
-        },  
+        },
         "TextractPostProcessTextFunction": {
             "Description" : "Function to extract lines of text from Textract response",
-            "Value": {     
+            "Value": {
                 "Fn::Join": ["/",[
-                { 
+                {
                     "Fn::Join": ["#",[
                     { "Fn::Join": ["?",[
                         {"Fn::Join": ["/",["https:", "", "console.aws.amazon.com", "lambda", "home"]]},
                         {"Fn::Join": ["=",["region", {"Ref": "AWS::Region"}]]}
                     ]]
                     }, "/functions"]]
-                },{"Ref": "TextractPostProcessTextFunction"}]]            
+                },{"Ref": "TextractPostProcessTextFunction"}]]
             }
-        },  
+        },
         "TextractDocumentAnalysisResultRetrievalFunction": {
             "Description" : "Function to query DynamoDB, behind API and retrieve document analysis results",
-            "Value": {     
+            "Value": {
                 "Fn::Join": ["/",[
-                { 
+                {
                     "Fn::Join": ["#",[
                     { "Fn::Join": ["?",[
                         {"Fn::Join": ["/",["https:", "", "console.aws.amazon.com", "lambda", "home"]]},
                         {"Fn::Join": ["=",["region", {"Ref": "AWS::Region"}]]}
                     ]]
                     }, "/functions"]]
-                },{"Ref": "TextractDocumentAnalysisResultRetrievalFunction"}]]            
+                },{"Ref": "TextractDocumentAnalysisResultRetrievalFunction"}]]
             }
-        },  
+        },
         "TextractTextDetectionResultRetrievalFunction": {
             "Description" : "Function to query DynamoDB, behind API and retrieve text detection results",
-            "Value": {     
+            "Value": {
                 "Fn::Join": ["/",[
-                { 
+                {
                     "Fn::Join": ["#",[
                     { "Fn::Join": ["?",[
                         {"Fn::Join": ["/",["https:", "", "console.aws.amazon.com", "lambda", "home"]]},
                         {"Fn::Join": ["=",["region", {"Ref": "AWS::Region"}]]}
                     ]]
                     }, "/functions"]]
-                },{"Ref": "TextractTextDetectionResultRetrievalFunction"}]]            
+                },{"Ref": "TextractTextDetectionResultRetrievalFunction"}]]
             }
-        }                                                
-    }            
+        }
+    }
 }
