@@ -3,9 +3,11 @@ version: 0.2
 phases:
   build:
     commands:
+      - export timestamp=`(date +%s)`
+      - export codefilename=$timestamp-textract-lambda-code.zip
       - cd functions && zip -r textract-lambda-code.zip * && cd ../
-      - aws s3 cp functions/textract-lambda-code.zip s3://esg-textract-code/textract-lambda-code.zip
-      - aws cloudformation deploy --template-file ./templates/textract-api-stack.json --stack-name Textract-Enhancer-Stack --s3-bucket esg-textract-cfn-templates --capabilities CAPABILITY_NAMED_IAM --parameter-overrides "DocumentBucketName=esg-scanned-documents"
+      - aws s3 cp functions/textract-lambda-code.zip s3://esg-textract-code/$codefilename
+      - aws cloudformation deploy --template-file ./templates/textract-api-stack.json --stack-name Textract-Enhancer-Stack --s3-bucket esg-textract-cfn-templates --capabilities CAPABILITY_NAMED_IAM --parameter-overrides "DocumentBucketName=esg-scanned-documents" --parameter-overrides "LambdaCodeFile=$codefilename"
 artifacts:
   files:
     - '**/*'
