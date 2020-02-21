@@ -1,0 +1,10 @@
+[
+  {
+    "NewDocumentBucketNeeded": "DocumentBucketName",
+    "ParameterValue": "esg-scanned-documents"
+  },
+  {
+    "ParameterKey": "NewDocumentBucketNeeded",
+    "ParameterValue": "false"
+  }
+]
