@@ -7,13 +7,15 @@ from datetime import datetime
 from xml.etree import ElementTree
 from textract_util import *
 
-def lambda_handler(event, context):    
+def lambda_handler(event, context):
     s3 = boto3.resource('s3')
     textract = boto3.client('textract')
     dynamodb = boto3.resource('dynamodb')
     table_name=os.environ['table_name']
-    table = dynamodb.Table(table_name)    
-   
+    table = dynamodb.Table(table_name)
+
+    print("{}".format(json.dumps(event)))
+
     documentBucket = event['DocumentBucket']
     documentKey = event['DocumentKey']
     resultType = "ALL"
@@ -27,7 +29,7 @@ def lambda_handler(event, context):
 
     item = None
     jobStartTimeStamp = None
-    jobCompleteTimeStamp = None  
+    jobCompleteTimeStamp = None
 
     try:
         response = table.scan(
@@ -64,8 +66,8 @@ def lambda_handler(event, context):
         jsonresponse['UploadPrefix'] = item['UploadPrefix']
         jsonresponse['NumPages'] = str(item['NumPages'])
         jsonresponse['NumTables'] = str(item['NumTables'])
-        jsonresponse['NumFields'] = str(item['NumFields'])                
-    
+        jsonresponse['NumFields'] = str(item['NumFields'])
+
         if resultType == "FORM" or resultType == "ALL":
             formFiles = item['FormFiles']
             print("Form Fields stored in {} files".format(len(formFiles)))
@@ -76,11 +78,11 @@ def lambda_handler(event, context):
                 jsonstring = s3_response['Body'].read()
 
                 formjson = json.loads(jsonstring)
-                jsonresponse['formfields'] = formjson    
+                jsonresponse['formfields'] = formjson
 
         if resultType == "TABLE" or resultType == "ALL":
             tableFiles = item['TableFiles']
-            jsonresponse['tables'] = []     
+            jsonresponse['tables'] = []
             print("Table data stored in {} files".format(len(tableFiles)))
             for tableFile in tableFiles:
                 s3_object = s3.Object(documentBucket,tableFile)
