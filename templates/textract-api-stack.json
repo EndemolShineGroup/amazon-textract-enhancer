@@ -529,8 +529,7 @@
                         }
                     ]
                 }
-            },
-            "DeletionPolicy" : "Retain"
+            }
         },
         "DocumentBucketPolicy": {
             "Type" : "AWS::S3::BucketPolicy",
@@ -940,6 +939,13 @@
                 "SourceArn": {"Fn::Join": ["",["arn:aws:execute-api:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":", {"Ref": "TextractDemoAPI"}, "/*"]]}
             }
         },
+       "TextractAPICustomDomain": {
+            "Type" : "AWS::ApiGateway::DomainName",
+            "Properties" : {
+                "CertificateArn" : "arn:aws:acm:us-east-1:171839048723:certificate/2b19b3e2-dfd5-4653-a481-76decb78f96f",
+                "DomainName" : "api.textract.esg.technology"
+            }
+        },
         "TextractDemoAPIDeployment": {
             "Type": "AWS::ApiGateway::Deployment",
             "DependsOn": "TextractDemoAPI",
@@ -948,10 +954,29 @@
                 "StageName": "demo",
                 "StageDescription": {
                     "LoggingLevel": "INFO",
-        "MetricsEnabled": "true"
+                    "MetricsEnabled": "true"
                 }
             }
-        }
+        },
+        "TextractAPIBasePathMapping": {
+            "Type" : "AWS::ApiGateway::BasePathMapping",
+            "Properties" : {
+                "BasePath" : "",
+                "DomainName" : {"Ref": "TextractAPICustomDomain"},
+                "RestApiId" : {"Ref": "TextractDemoAPI"},
+                "Stage": "demo"
+              }
+          },
+        "APIEndpointCNAME": {
+            "Type" : "AWS::Route53::RecordSet",
+            "Properties" : {
+                "HostedZoneName" : "textract.esg.technology.",
+                "Name" : "api.textract.esg.technology.",
+                "ResourceRecords" : [ { "Fn::GetAtt" : ["TextractAPICustomDomain", "DistributionDomainName"] }],
+                "TTL" : "60",
+                "Type" : "CNAME",
+              }
+          }
     },
     "Outputs" : {
         "DocumentBucket" : {
