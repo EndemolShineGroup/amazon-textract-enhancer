@@ -447,7 +447,7 @@
                 "FunctionName": {"Ref": "TextractAsyncJobSubmitFunction"},
                 "Action": "lambda:InvokeFunction",
                 "Principal": "s3.amazonaws.com",
-                "SourceArn": {"Fn::Join": [":",["arn","aws","s3","","", {"Fn::Join": ["-", [{"Ref": "AWS::AccountId"}, {"Ref": "DocumentBucketName"}]]}]]}
+                "SourceArn": {"Fn::Join": [":",["arn","aws","s3","","",  {"Ref": "DocumentBucketName"}]]}
             }
         },
         "TextractServiceRole": {
