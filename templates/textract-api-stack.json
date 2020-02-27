@@ -83,7 +83,7 @@
                         "AttributeType": "S"
                     },
                     {
-                        "AttributeName": "DocumentPath",
+                        "AttributeName": "DocumentKey",
                         "AttributeType": "S"
                     }
                 ],
@@ -106,7 +106,7 @@
                                     "KeyType": "HASH"
                               },
                               {
-                                    "AttributeName": "DocumentPath",
+                                    "AttributeName": "DocumentKey",
                                     "KeyType": "RANGE"
                               }
                         ],

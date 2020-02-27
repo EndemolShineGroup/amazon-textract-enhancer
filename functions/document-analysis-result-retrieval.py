@@ -44,7 +44,7 @@ def lambda_handler(event, context):
 
         #indexResponse = table.query(
         #    IndexName="DocumentIndex",
-        #    KeyConditionExpression=Key('DocumentBucket').eq(documentBucket) & Key('DocumentPath').eq(documentKey)
+        #    KeyConditionExpression=Key('DocumentBucket').eq(documentBucket) & Key('DocumentKey').eq(documentKey)
         #)
 
         #print(indexResponse)
