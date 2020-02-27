@@ -439,6 +439,7 @@ def getDocumentLatestJobId(documentBucket, documentKey):
     dynamodb = boto3.resource('dynamodb')
     table_name = os.environ['table_name']
     table = dynamodb.Table(table_name)
+    print("Querying {} with bucket {} and key {}".format(table_name, documentBucket, documentKey))
     indexResponse = table.query(
         IndexName="DocumentIndex",
         KeyConditionExpression=Key('DocumentBucket').eq(documentBucket) & Key('DocumentPath').eq(documentKey)
