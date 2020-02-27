@@ -503,7 +503,7 @@
             "DependsOn": ["TextractAsyncJobSubmitFunction", "DocumentAnalysisLambdaInvokeS3Permission"],
             "Condition": "NewDocumentBucketCreation",
             "Properties": {
-                "BucketName" : {"Fn::Join": ["-", [{"Ref": "AWS::AccountId"}, {"Ref": "DocumentBucketName"}]]},
+                "BucketName" : {"Ref": "DocumentBucketName"},
                 "AccessControl": "Private",
                 "VersioningConfiguration": {
                     "Status": "Enabled"
