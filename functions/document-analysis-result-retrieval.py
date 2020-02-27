@@ -6,6 +6,7 @@ import boto3
 from datetime import datetime
 from xml.etree import ElementTree
 from textract_util import *
+from boto3.dynamodb.conditions import Key, Attr
 
 def lambda_handler(event, context):
     s3 = boto3.resource('s3')
@@ -40,6 +41,14 @@ def lambda_handler(event, context):
                 ":jobType": 'DocumentAnalysis'
             }
         )
+
+        indexResponse = table.query(
+            IndexName="DocumentIndex",
+            KeyConditionExpression=Key('bucket').eq(documentBucket) & Key('key').eq(documentKey) & Key('jobType').eq('DocumentAnalysis')
+        )
+
+        print(indexResponse)
+
         recordsMatched = len(response['Items'])
         print("{} matching records found for {}/{}".format(recordsMatched, documentBucket, documentKey))
         if recordsMatched > 0:
