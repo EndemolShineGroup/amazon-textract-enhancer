@@ -42,12 +42,13 @@ def lambda_handler(event, context):
             }
         )
 
-        indexResponse = table.query(
-            IndexName="DocumentIndex",
-            KeyConditionExpression=Key('bucket').eq(documentBucket) & Key('key').eq(documentKey)
-        )
+        #indexResponse = table.query(
+        #    IndexName="DocumentIndex",
+        #    KeyConditionExpression=Key('DocumentBucket').eq(documentBucket) & Key('DocumentPath').eq(documentKey)
+        #)
 
-        print(indexResponse)
+        #print(indexResponse)
+        getDocumentLatestJobId(documentBucket, documentKey)
 
         recordsMatched = len(response['Items'])
         print("{} matching records found for {}/{}".format(recordsMatched, documentBucket, documentKey))
