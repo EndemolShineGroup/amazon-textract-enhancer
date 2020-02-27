@@ -13,7 +13,7 @@ def lambda_handler(event, context):
     dynamodb = boto3.client('dynamodb')
     table_name=os.environ['table_name']
     file_list = []
-
+    print (event)
     if "Records" in event:
         records = event['Records']
         numRecords = len(records)
