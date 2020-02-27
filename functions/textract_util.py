@@ -6,6 +6,7 @@ from collections import defaultdict
 from collections import OrderedDict
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 import boto3
+from boto3.dynamodb.conditions import Key, Attr
 
 #Function to retrieve result of completed analysis job
 def GetDocumentAnalysisResult(textract, jobId):
