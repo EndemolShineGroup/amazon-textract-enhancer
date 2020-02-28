@@ -529,7 +529,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "DeletionPolicy" : "Retain"
         },
         "DocumentBucketPolicy": {
             "Type" : "AWS::S3::BucketPolicy",
