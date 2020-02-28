@@ -32,15 +32,22 @@ def lambda_handler(event, context):
     jobStartTimeStamp = None
     jobCompleteTimeStamp = None
 
+    jobId = getDocumentLatestJobId(documentBucket, documentKey, 'DocumentAnalysis')
+    jobType = "DocumentAnalysis"
+
     try:
-        response = table.scan(
-            FilterExpression = "DocumentBucket = :bucket and DocumentKey = :key and JobType =:jobType",
-            ExpressionAttributeValues = {
-                ":bucket": documentBucket,
-                ":key": documentKey,
-                ":jobType": 'DocumentAnalysis'
-            }
+        response = table.query(
+            KeyConditionExpression=Key('JobId').eq(jobId) & Key('JobType').eq(jobType)
         )
+
+        # response = table.scan(
+        #     FilterExpression = "DocumentBucket = :bucket and DocumentKey = :key and JobType =:jobType",
+        #     ExpressionAttributeValues = {
+        #         ":bucket": documentBucket,
+        #         ":key": documentKey,
+        #         ":jobType": 'DocumentAnalysis'
+        #     }
+        # )
 
         #indexResponse = table.query(
         #    IndexName="DocumentIndex",
@@ -48,7 +55,7 @@ def lambda_handler(event, context):
         #)
 
         #print(indexResponse)
-        getDocumentLatestJobId(documentBucket, documentKey, 'DocumentAnalysis')
+        #getDocumentLatestJobId(documentBucket, documentKey, 'DocumentAnalysis')
 
         recordsMatched = len(response['Items'])
         print("{} matching records found for {}/{}".format(recordsMatched, documentBucket, documentKey))
