@@ -27,7 +27,7 @@ def lambda_handler(event, context):
     jobCompleteTimeStamp = None
 
     jobId = getDocumentLatestJobId(documentBucket, documentKey, 'TextDetection')
-    jobType = "DocumentAnalysis"
+    jobType = "TextDetection"
 
     try:
         # response = table.scan(
