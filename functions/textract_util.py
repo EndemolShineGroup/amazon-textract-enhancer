@@ -445,9 +445,9 @@ def getDocumentLatestJobId(documentBucket, documentKey):
         KeyConditionExpression=Key('DocumentBucket').eq(documentBucket) & Key('DocumentKey').eq(documentKey)
     )
 
-    items = indexResponse.Items
+    items = indexResponse["Items"]
     print(items)
-    items.sort(key="JobStartTimeStamp", reverse=true)
+    items.sort(key=lambda i: i['JobStartTimeStamp'], reverse=True)
     print(items)
     return 0
 
