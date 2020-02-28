@@ -6,35 +6,44 @@ import boto3
 from datetime import datetime
 from xml.etree import ElementTree
 from textract_util import *
+from boto3.dynamodb.conditions import Key, Attr
 
-def lambda_handler(event, context):    
+def lambda_handler(event, context):
     s3 = boto3.resource('s3')
     textract = boto3.client('textract')
     dynamodb = boto3.resource('dynamodb')
     table_name=os.environ['table_name']
-    table = dynamodb.Table(table_name)    
-   
+    table = dynamodb.Table(table_name)
+
     documentBucket = event['DocumentBucket']
     documentKey = event['DocumentKey']
 
     print("Invoking retrieval function for text detection result")
 
     jsonresponse = {}
- 
+
     item = None
     jobStartTimeStamp = None
-    jobCompleteTimeStamp = None  
+    jobCompleteTimeStamp = None
+
+    jobId = getDocumentLatestJobId(documentBucket, documentKey, 'TextDetection')
+    jobType = "DocumentAnalysis"
 
     try:
-        response = table.scan(
-            FilterExpression = "DocumentBucket = :bucket and DocumentKey = :key and JobType =:jobType",
-            ExpressionAttributeValues = {
-                ":bucket": documentBucket,
-                ":key": documentKey,
-                ":jobType": 'TextDetection'
+        # response = table.scan(
+        #     FilterExpression = "DocumentBucket = :bucket and DocumentKey = :key and JobType =:jobType",
+        #     ExpressionAttributeValues = {
+        #         ":bucket": documentBucket,
+        #         ":key": documentKey,
+        #         ":jobType": 'TextDetection'
+        #
+        #     }
+        # )
 
-            }
+        response = table.query(
+            KeyConditionExpression=Key('JobId').eq(jobId) & Key('JobType').eq(jobType)
         )
+
         recordsMatched = len(response['Items'])
         print("{} matching records found for {}/{}".format(recordsMatched, documentBucket, documentKey))
         if recordsMatched > 0:
@@ -60,8 +69,8 @@ def lambda_handler(event, context):
         jsonresponse['DocumentType'] = item['DocumentType']
         jsonresponse['UploadPrefix'] = item['UploadPrefix']
         jsonresponse['NumPages'] = str(item['NumPages'])
-        jsonresponse['NumLines'] = str(item['NumLines'])            
-    
+        jsonresponse['NumLines'] = str(item['NumLines'])
+
         textFiles = item['TextFiles']
         print("Document Text stored in {} files".format(len(textFiles)))
         for textFile in textFiles:
