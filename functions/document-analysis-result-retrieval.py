@@ -48,7 +48,7 @@ def lambda_handler(event, context):
         #)
 
         #print(indexResponse)
-        getDocumentLatestJobId(documentBucket, documentKey)
+        getDocumentLatestJobId(documentBucket, documentKey, 'DocumentAnalysis')
 
         recordsMatched = len(response['Items'])
         print("{} matching records found for {}/{}".format(recordsMatched, documentBucket, documentKey))

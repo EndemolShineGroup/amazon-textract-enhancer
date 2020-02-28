@@ -435,7 +435,7 @@ def extractTextBody(blocks):
     print(total_line)
     return document_text, total_line
 
-def getDocumentLatestJobId(documentBucket, documentKey):
+def getDocumentLatestJobId(documentBucket, documentKey, jobType):
     dynamodb = boto3.resource('dynamodb')
     table_name = os.environ['table_name']
     table = dynamodb.Table(table_name)
@@ -446,9 +446,9 @@ def getDocumentLatestJobId(documentBucket, documentKey):
     )
 
     items = indexResponse["Items"]
-    print(items)
-    items.sort(key=lambda i: i['JobStartTimeStamp'], reverse=True)
-    print(items)
-    return 0
+    filteredItems = [d for d in items if d['JobType'] == jobType]
+    print(filteredItems)
 
+    filteredItems.sort(key=lambda i: i['JobStartTimeStamp'], reverse=True)
+    return filteredItems[0]["JobId"]
 
