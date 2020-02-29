@@ -422,6 +422,10 @@ def extractTextBody(blocks):
     document_text = {}
     for page in blocks['PAGE']:
         document_text['Page-{0:02d}'.format(page['Page'])] = {}
+        if len(page['Relationships'])==0:
+            print("Page-{} contains 0 Lines".format(page['Page']))
+            continue
+
         print("Page-{} contains {} Lines".format(page['Page'], len(page['Relationships'][0]['Ids'])))
         total_line += len(page['Relationships'][0]['Ids'])
         for i, line_id in enumerate(page['Relationships'][0]['Ids']):
