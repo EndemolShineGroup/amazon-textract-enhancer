@@ -422,8 +422,7 @@ def extractTextBody(blocks):
     document_text = {}
     for page in blocks['PAGE']:
         document_text['Page-{0:02d}'.format(page['Page'])] = {}
-        print(page)
-        if len(page['Relationships'])==0:
+        if 'Relationships' not in page or len(page['Relationships'])==0:
             print("Page-{} contains 0 Lines".format(page['Page']))
             continue
 
